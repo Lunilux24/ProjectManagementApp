@@ -1,0 +1,95 @@
+.list {
+  text-align: left;
+  max-width: 750px;
+  margin: auto;
+}
+
+.submit-form {
+  max-width: 300px;
+  margin: auto;
+}
+
+.edit-form {
+  max-width: 300px;
+  margin: auto;
+}
+
+/* Two-column project details layout */
+.project-details {
+  border-left: 1px solid #e9ecef;
+  padding-left: 1.25rem;
+}
+
+.project-details .detail-item {
+  margin-bottom: 1rem;
+}
+
+/* Add space under the navbar */
+.navbar {
+  margin-bottom: 1rem;
+}
+
+/* Improve active list item visibility */
+.list-group-item.active {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+/* Padding for Project List title */
+.project-list-title {
+  padding-left: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Make action buttons consistent spacing */
+.detail-item .btn,
+.edit-form .btn,
+.submit-form .btn {
+  margin-right: 0.5rem;
+}
+
+/* Ensure project list and details use full height spacing on wider screens */
+@media (min-width: 768px) {
+  .list .col-md-6 {
+    min-height: 200px;
+  }
+}
+
+/* Header spacing for search + sort controls */
+.list-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.list-header .input-group {
+  flex: 1 1 240px;
+}
+.list-header .d-flex {
+  gap: 0.5rem;
+}
+
+/* Navbar padding: add breathing room for brand and links */
+.navbar .navbar-brand {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.navbar .nav-link {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+/* Form spacing: add consistent vertical spacing between form controls */
+.submit-form .form-group,
+.edit-form .form-group {
+  margin-bottom: 1rem;
+}
+
+/* Make select and inputs slightly taller and more comfortable to click */
+.submit-form .form-control,
+.edit-form .form-control {
+  padding: 0.5rem 0.75rem;
+}
