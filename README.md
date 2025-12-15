@@ -9,7 +9,7 @@ Create a simple project management app that uses a Django REST Framework backend
 
 ## System Architecture
 
-![[Project Management App SA.svg]] 
+![Application SA Diagram](SAD.svg)
 
 ## Data
 #### Database
