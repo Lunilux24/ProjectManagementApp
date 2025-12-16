@@ -17,6 +17,11 @@ Create a simple project management app that uses a Django REST Framework backend
 - CRUD operations possible on all projects
 - A search bar to retrieve projects as well as sort button to sort by title and creation_date
 
+#### Backend
+- Django REST Framework to create RESTful API endpoints
+- JsonWebToken (JWT) for authentication
+- Use Django ORM to interact with PostgreSQL database
+
 #### API
 
 | Methods | URLs                          | Actions                                        |
@@ -27,3 +32,10 @@ Create a simple project management app that uses a Django REST Framework backend
 | PUT     | /api/projects/:id             | update a project by id                         |
 | DELETE  | /api/projects/:id             | delete a project by id                         |
 | GET     | /api/projects?title=[keyword] | find all projects where title contains keyword |
+
+#### Frontend
+- React app with pages to list all projects, view project details, create new project, edit project, and delete project
+- Use Axios to make API calls to the backend
+- Use React Router for navigation between pages
+- Use Bootstrap for styling and layout
+- Use React Toastify for notifications on successful or failed operations
