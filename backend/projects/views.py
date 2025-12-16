@@ -3,13 +3,15 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 from projects.models import Project
 from projects.serializers import ProjectSerializer
 
 # Create a new project and retrieve all projects
 @api_view(['POST', 'GET'])
+@permission_classes([IsAuthenticated])
 def project_list(request):
     if request.method == 'POST':
         project_data = JSONParser().parse(request)
@@ -34,6 +36,7 @@ def project_list(request):
     
 # Retrieve, update or delete a project by id
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def project_detail(request, pk):
     try:
         project = Project.objects.get(pk=pk)
