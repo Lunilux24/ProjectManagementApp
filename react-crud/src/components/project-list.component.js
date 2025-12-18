@@ -29,12 +29,6 @@ function ProjectList() {
       });
   };
 
-  const refreshList = () => {
-    retrieveProjects();
-    setCurrentProject(null);
-    setCurrentIndex(-1);
-  };
-
   const setActiveProject = (project, index) => {
     // toggle selection: clicking the currently selected project will deselect it
     if (index === currentIndex) {
