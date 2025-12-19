@@ -7,8 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from projects.models import Project, Tasks
 from projects.serializers import TaskSerializer
 
-
-# Task CRUD endpoints
+# Create a new task for a project
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_task(request, project_id):
@@ -24,13 +23,12 @@ def create_task(request, project_id):
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Update or delete a task
 @api_view(['PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def update_delete_task(request, pk):
     try:
         task = Tasks.objects.get(pk=pk)
-        # Check if the user owns the project that this task belongs to
         if task.project.user != request.user:
             return JsonResponse({'message': 'You do not have permission to modify this task'}, status=status.HTTP_403_FORBIDDEN)
     except Tasks.DoesNotExist:
