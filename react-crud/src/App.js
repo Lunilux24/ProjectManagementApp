@@ -7,6 +7,9 @@ import { Routes, Route, Link } from "react-router-dom";
 import AddProject from "./components/add-project.component";
 import Project from "./components/project.component";
 import ProjectList from "./components/project-list.component";
+import TaskList from "./components/task-list.component";
+import Task from "./components/task.component";
+import AddTask from "./components/add-task.component";
 import Login from "./components/login.component";
 import ProtectedRoute from "./components/protected.route";
 import { useNavigate } from "react-router-dom";
@@ -74,6 +77,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Project />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId/tasks"
+            element={
+              <ProtectedRoute>
+                <TaskList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId/tasks/add"
+            element={
+              <ProtectedRoute>
+                <AddTask />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId/tasks/:id"
+            element={
+              <ProtectedRoute>
+                <Task />
               </ProtectedRoute>
             }
           />

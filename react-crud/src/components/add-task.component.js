@@ -1,31 +1,38 @@
 import React from "react";
-import { useAddProject } from "../hooks/useAddProject";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAddTask } from "../hooks/useAddTask";
 
-function AddProject() {
+function AddTask() {
+  const { projectId } = useParams();
+  const navigate = useNavigate();
+
   const {
     name,
     description,
     status,
     setStatus,
+    dueDate,
+    setDueDate,
     submitted,
     saving,
     onChangeTitle,
     onChangeDescription,
-    saveProject,
-    newProject,
-  } = useAddProject();
+    saveTask,
+    newTask,
+  } = useAddTask(projectId, navigate);
 
   return (
     <div className="submit-form">
       {submitted ? (
         <div>
-          <h4>You submitted successfully!</h4>
-          <button className="btn btn-success" onClick={newProject}>
-            Add Another Project
+          <h4>Task created successfully!</h4>
+          <button className="btn btn-success" onClick={newTask}>
+            Add Another Task
           </button>
         </div>
       ) : (
         <div>
+          <h4>Add Task</h4>
           {saving && (
             <div className="spinner-overlay">
               <div className="spinner-border text-primary" role="status">
@@ -58,6 +65,16 @@ function AddProject() {
             />
           </div>
           <div className="form-group">
+            <label htmlFor="dueDate">Due Date</label>
+            <input
+              type="date"
+              className="form-control"
+              id="dueDate"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
             <label htmlFor="status">Status</label>
             <select
               id="status"
@@ -71,7 +88,7 @@ function AddProject() {
             </select>
           </div>
           <button
-            onClick={saveProject}
+            onClick={saveTask}
             className="btn btn-success"
             disabled={saving}
           >
@@ -83,4 +100,4 @@ function AddProject() {
   );
 }
 
-export default AddProject;
+export default AddTask;

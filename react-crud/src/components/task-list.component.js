@@ -1,45 +1,58 @@
 import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import ProjectDataService from "../services/project.service";
-import { Link } from "react-router-dom";
 import { formatStatus } from "../common/status-utils";
-import { useProjectSearch } from "../hooks/useProjectSearch";
-import { useProjectSort } from "../hooks/useProjectSort";
+import { useTaskSearch } from "../hooks/useTaskSearch";
+import { useTaskSort } from "../hooks/useTaskSort";
 
-function ProjectList() {
-  const [projects, setProjects] = useState([]);
-  const [currentProject, setCurrentProject] = useState(null);
+function TaskList() {
+  const { projectId } = useParams();
+  const [tasks, setTasks] = useState([]);
+  const [currentTask, setCurrentTask] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [projectName, setProjectName] = useState("");
 
-  const { searchTitle, onChangeSearchTitle, searchTitleFunc } = useProjectSearch(setProjects);
-  const { sortKey, setSortKey, sortOrder, toggleSortOrder, sortedProjects } = useProjectSort(projects);
+  const { searchTitle, onChangeSearchTitle, searchTasks } = useTaskSearch(tasks);
+  const { sortKey, setSortKey, sortOrder, toggleSortOrder, sortedTasks } = useTaskSort(
+    tasks,
+    searchTitle,
+    searchTasks
+  );
 
   useEffect(() => {
-    retrieveProjects();
-  }, []);
+    retrieveProject();
+  }, [projectId]);
 
-  const retrieveProjects = () => {
-    ProjectDataService.getAll()
+  const retrieveProject = () => {
+    ProjectDataService.get(projectId)
       .then((response) => {
-        setProjects(response.data);
+        setTasks(response.data.tasks || []);
+        setProjectName(response.data.name);
       })
       .catch((e) => {
         console.log(e);
       });
   };
 
-  const setActiveProject = (project, index) => {
-    // toggle selection: clicking the currently selected project will deselect it
+  const setActiveTask = (task, index) => {
     if (index === currentIndex) {
-      setCurrentProject(null);
+      setCurrentTask(null);
       setCurrentIndex(-1);
     } else {
-      setCurrentProject(project);
+      setCurrentTask(task);
       setCurrentIndex(index);
     }
   };
 
   return (
     <div className="list row">
+      <div className="col-12 mb-3">
+        <h4>Tasks for: {projectName}</h4>
+        <Link to={`/projects/${projectId}/tasks/add`} className="btn btn-success mb-3">
+          Add New Task
+        </Link>
+      </div>
+      
       <div className="col-12 mb-3 d-flex flex-column flex-md-row align-items-start list-header">
         <div className="input-group" style={{ minWidth: 240 }}>
           <input
@@ -49,15 +62,6 @@ function ProjectList() {
             value={searchTitle}
             onChange={onChangeSearchTitle}
           />
-          <div className="input-group-append">
-            <button
-              className="btn btn-outline-secondary"
-              type="button"
-              onClick={searchTitleFunc}
-            >
-              Search
-            </button>
-          </div>
         </div>
         <div className="d-flex align-items-center mt-2 mt-md-0">
           <select
@@ -79,73 +83,73 @@ function ProjectList() {
       </div>
 
       <div className="col-md-6">
-        <h4 className="project-list-title">Project List</h4>
+        <h4 className="project-list-title">Task List</h4>
         <ul className="list-group">
-          {sortedProjects() &&
-            sortedProjects().map((project, index) => (
+          {sortedTasks() &&
+            sortedTasks().map((task, index) => (
               <li
                 className={
                   "list-group-item " + (index === currentIndex ? "active" : "")
                 }
-                onClick={() => setActiveProject(project, index)}
+                onClick={() => setActiveTask(task, index)}
                 key={index}
               >
-                {project.name}
+                {task.name}
               </li>
             ))}
         </ul>
       </div>
 
       <div className="col-md-6 project-details">
-        {currentProject ? (
+        {currentTask ? (
           <div className="detail-card">
-            <h4 className="detail-item">Project</h4>
+            <h4 className="detail-item">Task</h4>
             <div className="detail-item">
               <label>
                 <strong>Title:</strong>
               </label>{" "}
-              {currentProject.name}
+              {currentTask.name}
             </div>
             <div className="detail-item">
               <label>
                 <strong>Description:</strong>
               </label>{" "}
-              {currentProject.description}
+              {currentTask.description}
             </div>
             <div className="detail-item">
               <label>
                 <strong>Date Created:</strong>
               </label>{" "}
-              {currentProject.created_at
-                ? new Date(currentProject.created_at).toLocaleString()
+              {currentTask.created_at
+                ? new Date(currentTask.created_at).toLocaleString()
                 : ""}
+            </div>
+            <div className="detail-item">
+              <label>
+                <strong>Due Date:</strong>
+              </label>{" "}
+              {currentTask.due_date || "Not set"}
             </div>
             <div className="detail-item">
               <label>
                 <strong>Status:</strong>
               </label>{" "}
-              {formatStatus(currentProject.status)}
+              {formatStatus(currentTask.status)}
             </div>
 
             <div className="detail-item">
               <Link
-                to={"/projects/" + currentProject.id}
-                className="btn btn-primary mr-2"
+                to={`/projects/${projectId}/tasks/${currentTask.id}`}
+                className="btn btn-primary"
               >
                 Edit
-              </Link>
-              <Link
-                to={"/projects/" + currentProject.id + "/tasks"}
-                className="btn btn-info"
-              >
-                View Tasks
               </Link>
             </div>
           </div>
         ) : (
           <div>
             <br />
-            <p>Select a project to view details</p>
+            <p>Select a task to view details</p>
           </div>
         )}
       </div>
@@ -153,4 +157,4 @@ function ProjectList() {
   );
 }
 
-export default ProjectList;
+export default TaskList;

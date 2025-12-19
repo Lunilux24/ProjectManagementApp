@@ -1,13 +1,12 @@
-from django.shortcuts import render
-
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
-from projects.models import Project, Tasks
-from projects.serializers import ProjectSerializer, TaskSerializer
+from projects.models import Project
+from projects.serializers import ProjectSerializer
+
 
 # Create a new project and retrieve all projects
 @api_view(['POST', 'GET'])
@@ -17,11 +16,11 @@ def project_list(request):
         project_data = JSONParser().parse(request)
         project_serializer = ProjectSerializer(data=project_data)
         if project_serializer.is_valid():
-            project_serializer.save()
+            project_serializer.save(user=request.user)
             return JsonResponse(project_serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(project_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET': 
-        projects = Project.objects.all()
+        projects = Project.objects.filter(user=request.user)
 
         title = request.GET.get('title', None)
         if title is not None:
@@ -35,48 +34,14 @@ def project_list(request):
         return JsonResponse(project_serializer.data, safe=False)
 
 
-# Task CRUD endpoints
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def create_task(request, project_id):
-    try:
-        project = Project.objects.get(pk=project_id)
-    except Project.DoesNotExist:
-        return JsonResponse({'message': 'Project not found'}, status=status.HTTP_404_NOT_FOUND)
-    data = JSONParser().parse(request)
-    data['project'] = project.id
-    serializer = TaskSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
-def update_delete_task(request, pk):
-    try:
-        task = Tasks.objects.get(pk=pk)
-    except Tasks.DoesNotExist:
-        return JsonResponse({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = TaskSerializer(task, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        task.delete()
-        return JsonResponse({'message': 'Task was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
-    
 # Retrieve, update or delete a project by id
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
 def project_detail(request, pk):
     try:
-        project = Project.objects.get(pk=pk)
+        project = Project.objects.get(pk=pk, user=request.user)
     except Project.DoesNotExist:
-        return JsonResponse({'message': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({'message': 'The project does not exist or you do not have permission to access it'}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         project_serializer = ProjectSerializer(project)
@@ -91,4 +56,3 @@ def project_detail(request, pk):
     elif request.method == 'DELETE':
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
-    
